@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -47,8 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showDevices = false;
   List<BluetoothDiscoveryResult> results = <BluetoothDiscoveryResult>[];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String attention = "--";
-  String meditation = "--";
+  String attention = "0";
+  String meditation = "0";
   bool status = false;
   String json = "";
   String consoleOutput = "";
@@ -71,6 +69,23 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       startDiscovery();
     });
+  }
+
+  Widget findDirection(){
+    var attentionInt =  int.parse(attention);
+    var meditationInt = int.parse(meditation);
+    var delta = attentionInt - meditationInt;
+    if (delta.abs() < 15){
+      return const Image(image: AssetImage("assets/images/up.png"), fit: BoxFit.fill,);
+    }
+    else{
+      if (delta < 0){
+        return const Image(image: AssetImage("assets/images/right.png"), fit: BoxFit.fill,);
+      }
+      else{
+        return const Image(image: AssetImage("assets/images/left.png"), fit: BoxFit.fill,);
+      }
+    }
   }
 
   void connectedToDevice(String address, BuildContext context) async {
@@ -168,9 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ]),
             ),
-
             Container(
-              margin: EdgeInsets.only(top: 40),
+              height: 300,
+              width: 300,
+              child: findDirection(),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 16),
               child: Column(
                 children: [
                   Align(alignment: Alignment.centerLeft, child: Text("Логи", style: TextStyle(fontSize: 26),)),
